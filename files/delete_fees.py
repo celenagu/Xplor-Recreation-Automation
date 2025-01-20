@@ -1,10 +1,13 @@
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-import time, json
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time, json, csv
 
 # Constants
 TEST_ENVIRONMENT = True
 FILE_NAME = "delete_fees.csv"
+
 # login based on the environment
 if not TEST_ENVIRONMENT:
 	LOGIN_URL = "https://cityofbrampton.perfectmind.com/Menu/MemberRegistration/MemberSignIn"
@@ -33,68 +36,81 @@ def click_js(driver, elem):
 driver.get(LOGIN_URL)
 driver.find_element("id", "textBoxUsername").send_keys(USERNAME)
 
-while (input("Press ENTER to start/continue or anything else to end: ") == ""):
-	# User-defined range for facility indices
+
+while True:
+	user_input = input("Press ENTER to start/continue or type 'exit' to end: ").strip().lower()
+
+	if user_input == "exit":
+		break
+
+	# User defined-range for facility indices
 	start_idx = int(input("Enter the START value: "))
 	end_idx = int(input("Enter the END value: "))
 
-	# Main loop for processing facilities
-	while (input("Press ENTER to start/continue or anything else to end: ") == ""):
-		curr_idx = start_idx
-		with open(FILE_NAME,"w") as file:
-			while (curr_idx <= end_idx):
-				# attempt click on facility with retries
-				for attempt in range(5):
-					try:
-						time.sleep(1) # wait for any loading
-						facilities = driver.find_elements("class name", "k-master-row")
-						click_js(driver, facilities[curr_idx])
-						break
-					except:
-						# retry in case of failure
-						print(f"retrying, re-attempt #{attempt + 1}")
+	curr_idx = start_idx
 
-				print(f"Processing current facility index: {curr_idx}")
-				curr_facility = driver.find_element("class name", "box-tab-caption-active").text
-				log_save(file, curr_facility)
+	# fetch the list of facilities to be referenced later
+	facility_links = driver.find_elements("xpath", "//a[contains(@class, 'recordDetailIcon')]")
 
-				# enter facility edit mode
-				edit = driver.find_element("id", "editObject")
-				click_js(driver, edit)
+	facility_urls = [link.get_attribute("href") for link in facility_links]
 
-				# fetch and parse fee data from JSON
-				fee_data_elem = driver.find_element("id","fld_servicedurations")
-				fee_data = json.loads(fee_data_elem.get_attribute("value"))
-				delete_buttons = driver.find_elements("xpath", "//div[contains(@class, 'field-control-wrapper add-multiple-fee')]//i[contains(@class, 'pm-plain-button')]")
 
-				# Save it to a file
-				with open("fees_data.json", "w", encoding="utf-8") as json_file:
-					json.dump(fee_data, json_file, indent=4)  # Directly dump the JSON data
+	with open(FILE_NAME,"w", newline="", encoding="utf-8") as file:
+		# for populating csv file
+		writer = csv.writer(file)
+		writer.writerow(["Facility Name", "Fee Name", "Deleted?"])	# CSV header
 
-				print("JSON data saved to fees_data.json")
+		for curr_idx, url in enumerate(facility_urls[start_idx:end_idx + 1], start = start_idx):
 
-				print(f"Number of fees: {len(fee_data)}")
-				print(f"Number of delete buttons: {len(delete_buttons)}")
+			# attempt click on facility with retries
+			try:
+				driver.get(url) # open next facility directly in same tab
+				WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "box-tab-caption-active")))
 
-				# iterate over fees ----> ISSUE: LISTS START AT INDEX 0
-				for fee_idx in range(0, len(fee_data)):
-					fee_name = fee_data[fee_idx].get("PriceTypeName")
-					fee_log = ""
-					if any(year in fee_name for year in ["2020", "2021", "2022", "2023"]):
-						fee_log = "*" # Mark deleted fees with an asterisk (*)
-						click_js(driver,delete_buttons[fee_idx])
-					fee_log += fee_name
-					log_save(file, fee_log)
-				file.write("\n")
+			except:
+				print(f"Skipping facility index {curr_idx} due to error.")
+				continue
 
-				# save changes and go back to facility list
-				save = driver.find_element("id", "submitLinkVisible")
-				click_js(driver, save)
-				back = driver.find_element("class name", "back-button-link")
-				click_js(driver, back)
+			print(f"Processing current facility index: {curr_idx}")
+			curr_facility = driver.find_element("class name", "box-tab-caption-active").text
+			log_save(file, curr_facility)
 
-				# increment to next facility index
-				curr_idx += 1
+			# enter facility edit mode
+			WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "editObject"))).click()
+
+			# fetch and parse fee data from JSON
+			fee_data_elem = driver.find_element("id","fld_servicedurations")
+			fee_data = json.loads(fee_data_elem.get_attribute("value"))
+			delete_buttons = driver.find_elements("xpath", "//div[contains(@class, 'field-control-wrapper add-multiple-fee')]//i[contains(@class, 'pm-plain-button')]")
+
+
+			# iterate over fees ----> ISSUE: LISTS START AT INDEX 0
+			for fee_idx in range(0, len(fee_data)):
+				fee_name = fee_data[fee_idx].get("PriceTypeName")
+				is_deleted = "Yes" if any(year in fee_name for year in ["2020", "2021", "2022", "2023"]) else "No"
+
+				# write data to CSV
+				writer.writerow([curr_facility, fee_name, is_deleted])
+
+				if is_deleted == "Yes":
+					click_js(driver, delete_buttons[fee_idx])
+
+
+
+
+
+			# 	fee_log = ""
+			# 	if any(year in fee_name for year in ["2020", "2021", "2022", "2023"]):
+			# 		fee_log = "*" # Mark deleted fees with an asterisk (*)
+			# 		click_js(driver,delete_buttons[fee_idx])
+			# 	fee_log += fee_name
+			# 	log_save(file, fee_log)
+			# file.write("\n")
+
+			# save changes and go back to facility list
+			WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "submitLinkVisible"))).click()
+
+			time.sleep(1)
 
 # finish and close driver window
 print("Done!")
