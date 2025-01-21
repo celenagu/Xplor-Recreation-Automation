@@ -10,9 +10,8 @@ Changed so that delete_buttons strictly includes icons of class "pm-plain-button
 
 Added fetched data to physical JSON file for debugging. (Remove later)
 
-
-To do:
-
 Added ability to continuously specify start and end indices for facilities to update without having to refresh (debugging purposes).
+
+Optimized page navigation -> avoids navigating back to overview page when accessing facilities.
 
 delete_fees.csv is better formatted for viewing. 
