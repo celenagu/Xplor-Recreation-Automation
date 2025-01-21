@@ -73,7 +73,6 @@ while True:
 
 			print(f"Processing current facility index: {curr_idx}")
 			curr_facility = driver.find_element("class name", "box-tab-caption-active").text
-			log_save(file, curr_facility)
 
 			# enter facility edit mode
 			WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "editObject"))).click()
@@ -95,17 +94,6 @@ while True:
 				if is_deleted == "Yes":
 					click_js(driver, delete_buttons[fee_idx])
 
-
-
-
-
-			# 	fee_log = ""
-			# 	if any(year in fee_name for year in ["2020", "2021", "2022", "2023"]):
-			# 		fee_log = "*" # Mark deleted fees with an asterisk (*)
-			# 		click_js(driver,delete_buttons[fee_idx])
-			# 	fee_log += fee_name
-			# 	log_save(file, fee_log)
-			# file.write("\n")
 
 			# save changes and go back to facility list
 			WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "submitLinkVisible"))).click()
