@@ -14,7 +14,7 @@ if not TEST_ENVIRONMENT:
 	print("!===WARNING: LIVE MODE===!")
 else:
 	LOGIN_URL = "https://cityofbramptontest.perfectmind.com/Contacts/MemberRegistration/MemberSignIn"
-	USERNAME = "bramptontest"
+	USERNAME = "Train8"
 	print("===TEST MODE===")
 
 # Webdriver Initialization
