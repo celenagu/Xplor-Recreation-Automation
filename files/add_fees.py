@@ -1,7 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
 import time
 
 # Constants
@@ -41,14 +43,14 @@ start_idx = int(input("Enter the START value: "))
 end_idx = int(input("Enter the END value: "))
 fee_name = input("Enter the fee name: ")
 fee_amount = input("Enter the fee amount: ")
-fee_tax = input("Add tax? (y/n): ") == 'y'
-fee_duration = int(input("Enter the fee duration (minutes): "))
-fee_online = input("Show online? (y/n): ") == 'y'
+
 
 # Process current facility list
 while (input("Press ENTER to start/continue or anything else to end: ") == ""):
 	curr_idx = start_idx
+
 	with open(FILE_NAME,'w') as file:
+		
 		while (curr_idx < end_idx):
 			# attempt click on facility with retries
 			for attempt in range(5):
@@ -86,30 +88,22 @@ while (input("Press ENTER to start/continue or anything else to end: ") == ""):
 			action.key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE).perform()
 			action.send_keys(fee_amount).perform()
 
-			# apply tax if needed
-			tax_box = last_item.find_element(By.CSS_SELECTOR, "div.isVisibleShowOnline input.xpl-checkbox")
-			if fee_tax:
-				tax_box.click()
-
-			# enter fee duration
-			date_box = last_item.find_element(By.CSS_SELECTOR, "span[class='minutes-duration-selector']")
-			date_box.click()
-			action.key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE).perform()
-			action.send_keys(fee_duration).perform()
-
-			# set online status of fee if needed
-			online_box = last_item.find_element(By.CSS_SELECTOR, "span.multi-items-online-float input.xpl-checkbox")
-			if fee_online:
-				online_box.click()
+			# Wait for UI processing
+			time.sleep(2)
 			
 			# save changes and go back to facility list
 			save = driver.find_element("id", "submitLinkVisible")
-			click_js(driver, save)
-			back = driver.find_element("class name", "back-button-link")
-			click_js(driver, back)
+			#click_js(driver, save)
+			driver.execute_script("arguments[0].click();", save)
+
+			back = driver.find_element(By.XPATH, "//a[contains(@class, 'back-button-link')]")
+			#click_js(driver, back)
+			driver.execute_script("arguments[0].click();", back)
 
 			# increment to next facility index
 			curr_idx += 1
+
+
 
 # finish and close driver window
 print("Done!")
