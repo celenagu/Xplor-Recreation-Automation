@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
-import time
+import time, csv, json
 
 # Constants
 TEST_ENVIRONMENT = True
@@ -38,70 +38,138 @@ driver.get(LOGIN_URL)
 driver.find_element("id", "textBoxUsername").send_keys(USERNAME)
 action = ActionChains(driver)
 
-# Prompt users to define variables
-start_idx = int(input("Enter the START value: "))
-end_idx = int(input("Enter the END value: "))
-fee_name = input("Enter the fee name: ")
-fee_amount = input("Enter the fee amount: ")
+# edit as needed 
+fee_names = ["Affiliated - Tournament (4-6HRS) [Jan. 2025]", 
+			 "Affiliated - Tournament (6-9HRS) [Jan. 2025]", 
+			 "Affiliated - Tournament (9+HRS) [Jan. 2025]",
+			 "BOED - Tournament (4-6HRS) [Jan. 2025]", 
+			 "BOED - Tournament (6-9HRS) [Jan. 2025]",
+			 "BOED - Tournament (9+HRS) [Jan. 2025]"]
+fee_amounts_minor = [6.29, 9.21, 12.60, 6.29, 9.21, 12.60]
+fee_amounts_school = [4.22, 6.18, 8.46, 4.22, 6.18, 8.46]
 
+while True:
+	user_input = input("Press ENTER to start/continue or type 'exit' to end: ").strip().lower()
 
-# Process current facility list
-while (input("Press ENTER to start/continue or anything else to end: ") == ""):
+	if user_input == "exit":
+		break
+
+	# User defined-range for facility indices
+	start_idx = int(input("Enter the START value: "))
+	end_idx = int(input("Enter the END value: "))
+
 	curr_idx = start_idx
 
-	with open(FILE_NAME,'w') as file:
-		
-		while (curr_idx < end_idx):
-			# attempt click on facility with retries
-			for attempt in range(5):
-				try:
-					time.sleep(1) # wait for any loading
-					facilities = driver.find_elements("class name", "k-master-row")
-					click_js(driver, facilities[curr_idx])
-					break
-				except:
-					 # retry in case of failure
-					print(f"retrying, re-attempt #{attempt + 1}")
+	# fetch the list of facilities to be referenced later
+	facility_links = driver.find_elements("xpath", "//a[contains(@class, 'recordDetailIcon')]")
+	facility_urls = [link.get_attribute("href") for link in facility_links]
+
+	with open(FILE_NAME, "w", newline="", encoding="utf-8") as file:
+		# for populating csv file
+		writer = csv.writer(file)
+		writer.writerow(["Facility Name", "Fee", "Price", "Action"])
+
+		for curr_idx, url in enumerate(facility_urls[start_idx:end_idx+1], start = start_idx):
+
+			# attempt click facility
+			try:
+				driver.get(url) # open next facility directly in same tab
+				WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "box-tab-caption-active")))
+			except:
+				print(f"Skipping facility index {curr_idx} due to error:")
+				continue
 			
+			print()
 			print(f"Processing current facility index: {curr_idx}")
 			curr_facility = driver.find_element("class name", "box-tab-caption-active").text
-			log_save(file, curr_facility)
-			
+
+			# get facility type
+			facility_type_element = driver.find_elements(By.XPATH, "//div[contains(@id, 'fld_Readonly')]")[1]  
+			facility_type = facility_type_element.text
+
 			# enter facility edit mode
-			edit = driver.find_element("id", "editObject")
-			click_js(driver, edit)
+			WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "editObject"))).click()
 
-			# enter add fee mode
-			add_fee = driver.find_element(By.CSS_SELECTOR, "span[data-field='addserviceduration']")
-			click_js(driver, add_fee)
+			time.sleep(1)
 
-			# search and add fee name
-			last_item = driver.find_element(By.CSS_SELECTOR, "#servicedurationselectorwrapper ul li:last-child")
-			text_box = last_item.find_element(By.CSS_SELECTOR, "input[placeholder='Search by Name...']")
-			text_box.send_keys(fee_name)
-			time.sleep(1) # wait for search results to load
-			text_box.send_keys(Keys.RETURN)
+			# Fetch and parse fee data from JSON
+			fee_data_elem = driver.find_element("id","fld_servicedurations")
+			fee_data = json.loads(fee_data_elem.get_attribute("value"))
 
-			# enter fee amount
-			amount_box = last_item.find_element(By.CSS_SELECTOR, "span[class='k-widget k-numerictextbox field-web-control']")
-			amount_box.click()
-			action.key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE).perform()
-			action.send_keys(fee_amount).perform()
+			# fetch existing inputs
+			fee_inputs = driver.find_elements(By.CSS_SELECTOR, "td.field.noneselected.readmode input.k-formatted-value[placeholder='Fee'][type='text']")
 
-			# Wait for UI processing
-			time.sleep(2)
+			# Iterate over fees 
+			for fee_idx in range(len(fee_names)):
+				fee_name = fee_names[fee_idx]
+
+				# Determine the new price based on facility type
+				# Note, this else should only cover Minor and Mini fields, ensure that selected view only has FieldType = School, Mini, Minor
+				new_price = str(fee_amounts_school[fee_idx]) if "School" in facility_type else str(fee_amounts_minor[fee_idx])
+
+				# Get the index of the existing fee in fee_data
+				existing_fee_index = next((i for i, fee in enumerate(fee_data) if fee["PriceTypeName"] == fee_name), -1)
+
+				if existing_fee_index != -1:
+					print(f"Fee found at index: {existing_fee_index}")
+				else:
+					print("Fee not found, returning -1")
+
+				if existing_fee_index != -1:
+					
+					amount_box = fee_inputs[existing_fee_index]
+					amount_box.click()
+					action.key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE).perform()
+					action.send_keys(new_price)
+
+					# trigger update
+					action.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
+
+					writer.writerow([curr_facility, fee_name, new_price, "Updated"])
+
+
+					print(f"Updated '{new_price}' price to {fee_name}")
+				
+				else:
+					# enter add fee mode
+					add_fee = driver.find_element(By.CSS_SELECTOR, "span[data-field='addserviceduration']")
+					click_js(driver, add_fee)
+
+					# search and add fee name
+					last_item = driver.find_element(By.CSS_SELECTOR, "#servicedurationselectorwrapper ul li:last-child")
+					text_box = last_item.find_element(By.CSS_SELECTOR, "input[placeholder='Search by Name...']")
+					text_box.send_keys(fee_name)
+					time.sleep(1) # wait for search results to load
+					text_box.send_keys(Keys.RETURN)
+
+					# enter fee amount
+					amount_box = last_item.find_element(By.CSS_SELECTOR, "span[class='k-widget k-numerictextbox field-web-control']")
+					amount_box.click()
+					action.key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE).perform()
+					action.send_keys(new_price)
+
+					# trigger update
+					action.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
+
+					writer.writerow([curr_facility, fee_name, new_price, "Added"])
+
+					print(f"Added '{new_price}' price to {fee_name}")
+
+					# Wait for UI processing
+					time.sleep(2)
 			
-			# save changes and go back to facility list
-			save = driver.find_element("id", "submitLinkVisible")
-			#click_js(driver, save)
-			driver.execute_script("arguments[0].click();", save)
+			# save changes
+			save_button = WebDriverWait(driver, 10).until(
+				EC.presence_of_element_located((By.ID, "submitLinkVisible"))
+			)
 
-			back = driver.find_element(By.XPATH, "//a[contains(@class, 'back-button-link')]")
-			#click_js(driver, back)
-			driver.execute_script("arguments[0].click();", back)
+			time.sleep(1)
+
+			click_js(driver, save_button)
 
 			# increment to next facility index
 			curr_idx += 1
+									   
 
 
 

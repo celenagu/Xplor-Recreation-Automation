@@ -95,7 +95,7 @@ while True:
 					click_js(driver, delete_buttons[fee_idx])
 
 
-			# save changes and go back to facility list
+			# save changes
 			WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "submitLinkVisible"))).click()
 
 			time.sleep(1)
