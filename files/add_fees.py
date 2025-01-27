@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time, csv, json
 
 # Constants
-TEST_ENVIRONMENT = True
+TEST_ENVIRONMENT = False
 FILE_NAME = "add_fees.csv"
 # login based on the environment
 if not TEST_ENVIRONMENT:
@@ -88,7 +88,12 @@ while True:
 			facility_type = facility_type_element.text
 
 			# enter facility edit mode
-			WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "editObject"))).click()
+			# WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "editObject"))).click()
+
+			edit_button = driver.find_element(By.ID, "editObject")
+
+			# Use JavaScript to force the click
+			driver.execute_script("arguments[0].click();", edit_button)
 
 			time.sleep(1)
 
