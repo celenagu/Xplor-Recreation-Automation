@@ -38,7 +38,8 @@ driver.get(LOGIN_URL)
 driver.find_element("id", "textBoxUsername").send_keys(USERNAME)
 action = ActionChains(driver)
 
-# edit as needed 
+# ---------------- EDIT AS NEEDED ----------------
+# fee names and fee amounts should coordinate with each other 
 fee_names = ["Affiliated - Tournament (4-6HRS) [Jan. 2025]", 
 			 "Affiliated - Tournament (6-9HRS) [Jan. 2025]", 
 			 "Affiliated - Tournament (9+HRS) [Jan. 2025]",
@@ -47,6 +48,7 @@ fee_names = ["Affiliated - Tournament (4-6HRS) [Jan. 2025]",
 			 "BOED - Tournament (9+HRS) [Jan. 2025]"]
 fee_amounts_minor = [6.29, 9.21, 12.60, 6.29, 9.21, 12.60]
 fee_amounts_school = [4.22, 6.18, 8.46, 4.22, 6.18, 8.46]
+# --------------------------------------------------
 
 while True:
 	user_input = input("Press ENTER to start/continue or type 'exit' to end: ").strip().lower()
@@ -60,7 +62,7 @@ while True:
 
 	curr_idx = start_idx
 
-	# fetch the list of facilities to be referenced later
+	# fetch the list of facilities to be referenced later (avoiding back-navigating)
 	facility_links = driver.find_elements("xpath", "//a[contains(@class, 'recordDetailIcon')]")
 	facility_urls = [link.get_attribute("href") for link in facility_links]
 
@@ -88,12 +90,8 @@ while True:
 			facility_type = facility_type_element.text
 
 			# enter facility edit mode
-			# WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "editObject"))).click()
-
 			edit_button = driver.find_element(By.ID, "editObject")
-
-			# Use JavaScript to force the click
-			driver.execute_script("arguments[0].click();", edit_button)
+			click_js(driver, edit_button)
 
 			time.sleep(1)
 
@@ -104,15 +102,14 @@ while True:
 			# fetch existing inputs
 			fee_inputs = driver.find_elements(By.CSS_SELECTOR, "td.field.noneselected.readmode input.k-formatted-value[placeholder='Fee'][type='text']")
 
-			# Iterate over fees 
+			# Iterate over preexisting fees
 			for fee_idx in range(len(fee_names)):
 				fee_name = fee_names[fee_idx]
 
-				# Determine the new price based on facility type
-				# Note, this else should only cover Minor and Mini fields, ensure that selected view only has FieldType = School, Mini, Minor
+				# Note, the else case only covers Minor and Mini fields, ensure that selected view only has FieldType = School, Mini, Minor ---> Edit as needed
 				new_price = str(fee_amounts_school[fee_idx]) if "School" in facility_type else str(fee_amounts_minor[fee_idx])
 
-				# Get the index of the existing fee in fee_data
+				# Get the index of the existing fee in fee_data if it exists, otherwise, return -1
 				existing_fee_index = next((i for i, fee in enumerate(fee_data) if fee["PriceTypeName"] == fee_name), -1)
 
 				if existing_fee_index != -1:
@@ -120,6 +117,7 @@ while True:
 				else:
 					print("Fee not found, returning -1")
 
+				# If fee is found, update preexisting fee
 				if existing_fee_index != -1:
 					
 					amount_box = fee_inputs[existing_fee_index]
@@ -130,11 +128,12 @@ while True:
 					# trigger update
 					action.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
 
+					# write to csv
 					writer.writerow([curr_facility, fee_name, new_price, "Updated"])
-
 
 					print(f"Updated '{new_price}' price to {fee_name}")
 				
+				# If fee does not exist, add new fee
 				else:
 					# enter add fee mode
 					add_fee = driver.find_element(By.CSS_SELECTOR, "span[data-field='addserviceduration']")
@@ -156,6 +155,7 @@ while True:
 					# trigger update
 					action.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
 
+					# add to csv
 					writer.writerow([curr_facility, fee_name, new_price, "Added"])
 
 					print(f"Added '{new_price}' price to {fee_name}")
@@ -164,9 +164,7 @@ while True:
 					time.sleep(2)
 			
 			# save changes
-			save_button = WebDriverWait(driver, 10).until(
-				EC.presence_of_element_located((By.ID, "submitLinkVisible"))
-			)
+			save_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "submitLinkVisible")))
 
 			time.sleep(1)
 
@@ -175,8 +173,6 @@ while True:
 			# increment to next facility index
 			curr_idx += 1
 									   
-
-
 
 # finish and close driver window
 print("Done!")
