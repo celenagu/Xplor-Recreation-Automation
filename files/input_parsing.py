@@ -1,8 +1,18 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support import expected_conditions as EC
-import time, csv, json
+import pandas as pd
 
+"""
+1. You need to install pandas to be able to parse the excel file
+--> pip install pandas openpyxl
+"""
+#constants
+file_name = "Service-Drop-Ins.csv"
+
+#reading the file
+file = pd.read_csv(file_name)
+
+#getting the names from the specified column
+column_name = "Name"          
+names = file[column_name].dropna().tolist()  
+
+for current_name in names:
+    print({current_name})
