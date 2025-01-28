@@ -1,0 +1,102 @@
+﻿Name,Service Type,Setup Time (Mins),Validate Membership on Fee,RowNumber
+"(Employees ONLY) Drop-In Fitness and Wellness","Single Booking",0,True,1
+"Drop-In Animals","Single Booking",0,False,2
+"Drop-In Aquafit","Single Booking",0,True,3
+"Drop-In Aquatic Skills Practice","Single Booking",0,True,4
+"Drop-In Badminton","Single Booking",0,True,5
+"Drop-In Ball and Floor Hockey","Single Booking",0,True,6
+"Drop-In Basketball","Single Booking",0,True,7
+"Drop-In Cardio Exercise","Single Booking",0,True,8
+"Drop-In Child and Youth","Single Booking",0,True,9
+"Drop-In Cricket","Single Booking",0,True,10
+"Drop-In Curling","Single Booking",0,False,11
+"Drop-In Dodgeball","Single Booking",0,True,12
+"Drop-In Figure Skating","Single Booking",0,True,13
+"Drop-In Fitness (Outdoor)","Single Booking",0,True,14
+"Drop-In Fitness Centre","Single Booking",0,True,15
+"Drop-In Fitness Consultation","Single Booking",0,True,16
+"Drop-In Flag Football","Single Booking",0,True,17
+"Drop-In Flag Rugby","Single Booking",0,True,18
+"Drop-In Free Fitness","Single Booking",0,True,19
+"Drop-In Free Skating","Single Booking",0,True,20
+"Drop-In Free Sports","Single Booking",0,True,21
+"Drop-In Free Swimming","Single Booking",0,True,22
+"Drop-In General","Single Booking",0,True,23
+"Drop-In General (Outdoor)","Single Booking",0,True,24
+"Drop-In Golf","Single Booking",0,False,25
+"Drop-In Hockey Shoot Around","Single Booking",0,True,26
+"Drop-In Hockey Shoot Around (Outdoor)","Single Booking",0,True,27
+"Drop-In Inclusion General","Single Booking",0,True,28
+"Drop-In Inclusion Skate","Single Booking",0,True,29
+"Drop-In Inclusion Special Events","Single Booking",0,True,30
+"Drop-In Inclusion Swim","Single Booking",0,True,31
+"Drop-In Inline","Single Booking",0,True,32
+"Drop-In Lane Swim","Single Booking",0,True,33
+"Drop-In Low Impact Exercise","Single Booking",0,True,34
+"Drop-In Muscle Conditioning","Single Booking",0,True,35
+"Drop-In Ninja Parkour and Rock Climbing","Single Booking",0,False,36
+"Drop-In Open Water Swim","Single Booking",0,True,37
+"Drop-In Personal Training","Single Booking",0,False,38
+"Drop-In Pickleball","Single Booking",0,True,39
+"Drop-In Public Skate","Single Booking",0,True,40
+"Drop-In Public Skate (Outdoor)","Single Booking",0,True,41
+"Drop-In Public Swim","Single Booking",0,True,42
+"Drop-In Public Swim (Outdoor)","Single Booking",0,True,43
+"Drop-In Racquetball and Squash","Single Booking",0,True,44
+"Drop-In Rehabilitation Swim","Single Booking",0,True,45
+"Drop-In Senior - Arts and Crafts","Single Booking",0,True,46
+"Drop-In Senior - Cafeteria","Single Booking",0,False,47
+"Drop-In Senior - Cards","Single Booking",0,True,48
+"Drop-In Senior - Dance","Single Booking",0,True,49
+"Drop-In Senior - Education and Culture","Single Booking",0,True,50
+"Drop-In Senior - Fitness","Single Booking",0,True,51
+"Drop-In Senior - Games","Single Booking",0,True,52
+"Drop-In Senior - Music","Single Booking",0,True,53
+"Drop-In Senior - Probus","Single Booking",0,True,54
+"Drop-In Senior - Sports","Single Booking",0,True,55
+"Drop-In Shinny","Single Booking",0,True,56
+"Drop-In Shinny (Outdoor)","Single Booking",0,True,57
+"Drop-In Skiing","Single Booking",0,False,58
+"Drop-In Snowboarding","Single Booking",0,False,59
+"Drop-In Soccer","Single Booking",0,True,60
+"Drop-In Special Events","Single Booking",0,False,61
+"Drop-In Sports","Single Booking",0,True,62
+"Drop-In Sports (Outdoor)","Single Booking",0,True,63
+"Drop-In STEAM","Single Booking",0,True,64
+"Drop-In Table Tennis","Single Booking",0,True,65
+"Drop-In Tennis","Single Booking",0,True,66
+"Drop-In Therapeutic Swim","Single Booking",0,True,67
+"Drop-In Track and Field","Single Booking",0,True,68
+"Drop-In Tubing","Single Booking",0,False,69
+"Drop-In Ultimate Frisbee and Disc Golf","Single Booking",0,True,70
+"Drop-In Volleyball and Spikeball®","Single Booking",0,True,71
+"Drop-In Walking","Single Booking",0,True,72
+"Drop-In Walking Path (Outdoor)","Single Booking",0,True,73
+"Drop-In Water Sports","Single Booking",0,True,74
+"Drop-In Yoga, Balance and Wellness","Single Booking",0,True,75
+"Drop-in Youth Hub Creative Arts","Single Booking",0,False,76
+"Drop-In Youth Hub eSports","Single Booking",0,False,77
+"Drop-In Youth Hub Hours","Single Booking",0,False,78
+"Drop-In Youth Hub Programs","Single Booking",0,False,79
+"Drop-In Youth Hub Special Events","Single Booking",0,False,80
+"Drop-In Zumba®","Single Booking",0,True,81
+"Invite Only - Drop-In","Single Booking",0,False,82
+"OSGA Senior Games Membership","Single Booking",0,False,83
+"Professor's Lake Boat Rentals- Canoe","Single Booking",0,False,84
+"Professor's Lake Boat Rentals- Corcle (Round Boat)","Single Booking",0,False,85
+"Professor's Lake Boat Rentals- Kayak","Single Booking",0,False,86
+"Professor's Lake Boat Rentals- Paddleboat","Single Booking",0,False,87
+"Professor's Lake Boat Rentals- Stand-Up Paddleboard","Single Booking",0,False,88
+"Professor's Lake Drop-in Beach Access","Single Booking",0,True,89
+"Professor's Lake Drop-In Wibit (Inflatable Floating Waterpark) Access","Single Booking",0,False,90
+"Racquetball/Squash Leagues","Single Booking",0,True,91
+"ZXDrop-In Cardio Exercise (Neighbourhood)","Single Booking",0,True,92
+"ZXDrop-In Fitness Centre (Neighbourhood)","Single Booking",0,False,93
+"zxDrop-In FitZone","Single Booking",0,False,94
+"ZXDrop-In Low Impact Exercise (Neighbourhood)","Single Booking",0,False,95
+"ZXDrop-In Muscle Conditioning (Neighbourhood)","Single Booking",0,True,96
+"zxDrop-In Pottery Painting","Single Booking",0,False,97
+"ZXDrop-In Yoga, Balance and Wellness (Neighbourhood)","Single Booking",0,True,98
+"ZXDrop-In Zumba® (Neighbourhood)","Single Booking",0,True,99
+"ZxOSGA Summer Senior Games District 19","Single Booking",0,False,100
+"ZxOSGA Winter Senior Games District 19","Single Booking",0,False,101
