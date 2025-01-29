@@ -54,45 +54,60 @@ driver.find_element("id", "textBoxUsername").send_keys(USERNAME)
 action = ActionChains(driver)
 
 
-#----------------------------------------------------------------------------------------------------------
+#---------------------------------OVERALL LOOP------------------------------------------------
 while True:
     user_input = input("Press ENTER to start/continue or type 'exit' to end: ").strip().lower()
 
     if user_input == "exit":
         break
 
-#-----------------------------finding the 'Section'--------------------------------------------
-    service_section = driver.find_element(By.XPATH, "//*[@id='mCSB_2_container']/div[3]/div[3]/div[10]")
+#-----------------------------Finding the 'Section'--------------------------------------------
+    #Locating the button
+    service_section_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]")
 
     # Scroll into view
-    driver.execute_script("arguments[0].scrollIntoView();", service_section)
+    driver.execute_script("arguments[0].scrollIntoView();", service_section_button)
     time.sleep(1)  # Small delay to let the browser adjust
 
-    # Click using JavaScript (if needed)
-    driver.execute_script("arguments[0].click();", service_section)
+    service_section_button.click()
 
     # Wait for the drop-down options to load
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//*[@id='mCSB_2_container']/div[3]/div[3]/div[10]"))
+    WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]"))
     )
 
+#-----------------------------Typing into the search bar------------------------------------------
     # Enter the current name
     current_name = "Drop-In Animals"
+	
+    search_input = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'search-area focused')]//input[contains(@class, 'serch-text')]")
+        )
+    )
 
-    # Fix: Use CSS selector instead of CLASS_NAME for multiple classes
-    search_input = driver.find_element(By.CSS_SELECTOR, ".search-area.focused")
     search_input.click()  # Click to activate it
     search_input.send_keys(current_name)
 
-    time.sleep(2)  # Ideally use WebDriverWait
+    time.sleep(1) 
+#---------------------------Selecting the right checkbox----------------------------------------
 
-    # Dynamically find the correct option that matches current_name
-    option_xpath = f"//*[@id='mCSB_2_container']//div[contains(text(), '{current_name}')]"
-    option = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, option_xpath)))
+    # Needed to create a list and always select the 2nd checkbox as that would be the checkbox associated with current_name
+    list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'multi-select-filter-template')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'possible-options mCustomScrollbar _mCS_3 mCS-autoHide')]//div[@id='mCSB_3']//div[@id='mCSB_3_container']//ul[@data-bind='foreach: allItemsToShow']")                                                      
+    
+    # Ensure there are at least 2 items before accessing the second one
+    if len(list_items) >= 2:
+        second_li = list_items[1]
 
-    # Click on the matching option
-    option.click()
+        # Locate the checkbox inside the second <li>
+        second_checkbox_label = second_li.find_element("xpath", ".//label[contains(@class, 'filters-checkbox')]")
+        
+        # Click the checkbox
+        second_checkbox_label.click()
+    else:
+        print("Less than 2 checkboxes found!")
 
+#-------------------------------Clicking on'Done'-----------------------------------------------
     # Locate and click the "Done" button
-    done_button = driver.find_element(By.CLASS_NAME, "done-btn")  # Check if this is correct
+    done_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'done-btn-wrapper')]//div[contains(@class, 'done-btn')]")
     done_button.click()
