@@ -99,7 +99,8 @@ while True:
 			EC.element_to_be_clickable((By.XPATH, "//ul[contains(@class, 'edit-event-header')]//li[@id='editEventTabs-tab-2']"))
 		)
 
-		repeat_tab.click()
+		# repeat_tab.click()
+		click_js(driver, repeat_tab)
 
 		# # Dismiss overlay alerts blocking view
 		# overlay_notif = driver.find_elements("xpath", "//div[contains(@class, 'k-animation-container')]//div[contains(@class, alert)]")
@@ -119,7 +120,7 @@ while True:
 		action.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
 		print("Date updated.")
 
-		# In booking tab
+		# ---------- In booking tab ---------------------
 
 		booking_tab = WebDriverWait(driver, 15).until(
 			EC.element_to_be_clickable((By.XPATH, "//ul[contains(@class, 'edit-event-header')]//li[@id='editEventTabs-tab-3']"))
@@ -127,23 +128,46 @@ while True:
 
 		booking_tab.click()
 
-		# Update booking times
-		admin_settings = driver.find_element(By.XPATH, "//a[contains(@class, 'admin-advanced-settings')]")
-		click_js(driver, admin_settings)
+		# ---------- Update booking times ----------------
 
-		chg_buttons = driver.find_elements("xpath", "//div[@id= 'registrationDatesAdvancedSettings']//span[contains(@class, 'change-date-btn')]")
-		click_js(driver, chg_buttons[0])
+		# Updating registration times
+		settings = []
+		settings.append(driver.find_element(By.XPATH, "//a[contains(@class, 'admin-advanced-settings')]"))
+		settings.append(driver.find_element(By.XPATH, "//a[@class='advanced-settings']"))
 
-		hours_btn = driver.find_element(By.XPATH, "//div[@id='registrationDateOptionsSelector']//div[contains(@class, 'reg-date-options-selector-row')]//span[contains(text(), '# Hours')]")
-		click_js(driver, hours_btn)
+		for settings_btn in settings:
 
-		done = driver.find_element(By.XPATH, "//div[@id='registrationDateOptionsSelector']//button[contains(@class, 'reg-date-done-btn')]")
-		click_js(driver, done)
+			click_js(driver, settings_btn)
 
+			chg_buttons = driver.find_elements("xpath", "//div[@id= 'registrationDatesAdvancedSettings']//span[contains(@class, 'change-date-btn')]")
 
+			for i in range(0, 3):
+				click_js(driver, chg_buttons[i])
 
-		online_settings = driver.find_element(By.XPATH, "//a[contains(@class, 'advanced-settings')]")
+				hours_btn = driver.find_element(By.XPATH, "//div[@id='registrationDateOptionsSelector']//div[contains(@class, 'reg-date-options-selector-row')]//span[contains(text(), '# Hours')]")
+				click_js(driver, hours_btn)
+				
+				if i != 0:
+					inc_btn = driver.find_element(By.XPATH, "//div[contains(@class, 'reg-date-selector')]//span[contains(@class, 'k-link-increase')]")
+					
+					for j in range(24):
+						inc_btn.click()
 
+				done = driver.find_element(By.XPATH, "//div[@id='registrationDateOptionsSelector']//button[contains(@class, 'reg-date-done-btn')]")
+				click_js(driver, done)
+
+			# save registration times
+			save = driver.find_element(By.XPATH, "//a[@title='Save' and contains(@class, 'pm-confirm-button')]")
+			click_js(driver, save)
+
+		# Save all changes
+		save_final = driver.find_element(By.XPATH, "//div[contains(@class, 'k-edit-form-container')]//button[contains(@class, k-scheduler-update)]")
+		save_finals = driver.find_elements(By.XPATH, "//div[contains(@class, 'k-edit-form-container')]//span[contains(@class, 'k-button-text')]")
+
+		click_js(driver, save_finals[1])
+
+		print("Registration times updated.")
+		
 
 
 		# Click repeat tab
