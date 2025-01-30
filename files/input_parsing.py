@@ -86,20 +86,27 @@ while True:
 #---------------------------Selecting the right checkbox----------------------------------------
 
         # Needed to create a list and always select the 2nd checkbox as that would be the checkbox associated with current_name                                                     
-        list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter')]//label[contains(@class, 'filters-checkbox')]")
+        list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'filter-selectable-options-list')]//label[contains(@class, 'filters-checkbox')]")
         click_js(driver, list_items[1])
+        time.sleep(1)
 		
 #-------------------------------Clicking on'Done'-----------------------------------------------
         # Locate and click the "Done" button
-        done_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'done-btn-wrapper')]//div[contains(@class, 'done-btn')]")
-        done_button.click()
+        # done_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]")
+        # done_button.click()
+        done_button = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]"))
+        )
+        if done_button.is_displayed() and done_button.is_enabled():
+            done_button.click()
+        else:
+            print("Done button is not visible or disabled.")
 		
  #----------------------------------Celena's Code-----------------------------------------------
         #For now a temporary question
         temp_question = input("Press ENTER to confirm that fees and timelines have been adjusted for this Service: ").strip().lower()
 
- #---------------------------------Clicking Reset-----------------------------------------------	
-        # reset_buttons = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'multi-select-filter-template')]//div[contains(@class, 'selectable-filter-row')]//div[contains(@class, 'filter-caption-wrapper')]//span[contains(@class, 'reset-filter-link')]")
+ #---------------------------------Clicking Reset-----------------------------------------------
         reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
         if reset_button:
             print("Reset button found, clicking now...")
