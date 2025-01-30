@@ -17,9 +17,6 @@ file = pd.read_csv(read_file_name)
 column_name = "Name"          
 names = file[column_name].dropna().tolist()  
 
-# for current_name in names:
-#     print(current_name)
-
 
 # Constants
 TEST_ENVIRONMENT = True
@@ -61,57 +58,51 @@ while True:
     if user_input == "exit":
         break
 
+#-----------------------------Looping through csv file------------------------------------------
+    for current_names in names:
+		
 #-----------------------------Finding the 'Section'--------------------------------------------
-    #Locating the button
-    service_section_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]")
+        #Locating the button
+        service_section_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]")
 
-    # Scroll into view
-    # driver.execute_script("arguments[0].scrollIntoView();", service_section_button)
-    # time.sleep(1)  # Small delay to let the browser adjust
+        click_js(driver, service_section_button)
 
-    click_js(driver, service_section_button)
-
-    # Wait for the drop-down options to load
-    WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]"))
-    )
-
-#-----------------------------Typing into the search bar------------------------------------------
-    # Enter the current name
-    current_name = "Drop-In Animals"
-	
-    search_input = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'search-area focused')]//input[contains(@class, 'serch-text')]")
+        # Wait for the drop-down options to load
+        WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]"))
         )
-    )
+		
+#-----------------------------Typing into the search bar------------------------------------------
+        search_input = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'search-area focused')]//input[contains(@class, 'serch-text')]")
+            )
+        )
 
-    search_input.click()  # Click to activate it
-    search_input.send_keys(current_name)
+        search_input.click()  # Click to activate it
+        search_input.send_keys(current_names)
 
-    time.sleep(1) 
+        time.sleep(1) 
 #---------------------------Selecting the right checkbox----------------------------------------
 
-    # Needed to create a list and always select the 2nd checkbox as that would be the checkbox associated with current_name
-    # list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'multi-select-filter-template')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'possible-options mCustomScrollbar _mCS_3 mCS-autoHide')]//div[@id='mCSB_3']//div[@id='mCSB_3_container']//ul[@data-bind='foreach: allItemsToShow']")                                                      
-    list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter')]//label[contains(@class, 'filters-checkbox')]")
-    click_js(driver, list_items[1])
-
-
-
-    # # Ensure there are at least 2 items before accessing the second one
-    # if len(list_items) >= 2:
-    #     second_li = list_items[1]
-
-    #     # Locate the checkbox inside the second <li>
-    #     second_checkbox_label = second_li.find_element("xpath", ".//label[contains(@class, 'filters-checkbox')]")
-        
-    #     # Click the checkbox
-    #     second_checkbox_label.click()
-    # else:
-    #     print("Less than 2 checkboxes found!")
-
+        # Needed to create a list and always select the 2nd checkbox as that would be the checkbox associated with current_name                                                     
+        list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter')]//label[contains(@class, 'filters-checkbox')]")
+        click_js(driver, list_items[1])
+		
 #-------------------------------Clicking on'Done'-----------------------------------------------
-    # Locate and click the "Done" button
-    done_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'done-btn-wrapper')]//div[contains(@class, 'done-btn')]")
-    done_button.click()
+        # Locate and click the "Done" button
+        done_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'done-btn-wrapper')]//div[contains(@class, 'done-btn')]")
+        done_button.click()
+		
+ #----------------------------------Celena's Code-----------------------------------------------
+        #For now a temporary question
+        temp_question = input("Press ENTER to confirm that fees and timelines have been adjusted for this Service: ").strip().lower()
+
+ #---------------------------------Clicking Reset-----------------------------------------------	
+        reset_buttons = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'multi-select-filter-template')]//div[contains(@class, 'selectable-filter-row')]//div[contains(@class, 'filter-caption-wrapper')]//span[contains(@class, 'reset-filter-link')]")
+
+        if reset_buttons:
+            print("Reset button found, clicking now...")
+            click_js(driver, reset_buttons[0])
+        else:
+            print("Reset button not found!")
