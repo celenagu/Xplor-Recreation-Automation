@@ -92,24 +92,34 @@ while True:
 		
 #-------------------------------Clicking on'Done'-----------------------------------------------
         # Locate and click the "Done" button
-        # done_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]")
-        # done_button.click()
-        done_button = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]"))
-        )
-        if done_button.is_displayed() and done_button.is_enabled():
-            done_button.click()
-        else:
-            print("Done button is not visible or disabled.")
+        done_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]")
+        done_button.click()
+
+        # done_button = WebDriverWait(driver, 10).until(
+        #     EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]"))
+        # )
+        # if done_button.is_displayed() and done_button.is_enabled():
+        #     done_button.click()
+        # else:
+        #     print("Done button is not visible or disabled.")
 		
+        # done_button = WebDriverWait(driver, 10).until(
+        #     EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]"))
+        # )
+
+        # WebDriverWait(driver, 10).until(
+        #     EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]"))
+        # )
+
+        # click_js(driver, done_button)
  #----------------------------------Celena's Code-----------------------------------------------
         #For now a temporary question
         temp_question = input("Press ENTER to confirm that fees and timelines have been adjusted for this Service: ").strip().lower()
 
  #---------------------------------Clicking Reset-----------------------------------------------
-        reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
-        if reset_button:
-            print("Reset button found, clicking now...")
-            click_js(driver, reset_button)
-        else:
-            print("Reset button not found!")
+        # reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
+        # if reset_button:
+        #     print("Reset button found, clicking now...")
+        #     click_js(driver, reset_button)
+        # else:
+        #     print("Reset button not found!")
