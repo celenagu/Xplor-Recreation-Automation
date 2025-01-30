@@ -99,10 +99,10 @@ while True:
         temp_question = input("Press ENTER to confirm that fees and timelines have been adjusted for this Service: ").strip().lower()
 
  #---------------------------------Clicking Reset-----------------------------------------------	
-        reset_buttons = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'multi-select-filter-template')]//div[contains(@class, 'selectable-filter-row')]//div[contains(@class, 'filter-caption-wrapper')]//span[contains(@class, 'reset-filter-link')]")
-
-        if reset_buttons:
+        # reset_buttons = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'multi-select-filter-template')]//div[contains(@class, 'selectable-filter-row')]//div[contains(@class, 'filter-caption-wrapper')]//span[contains(@class, 'reset-filter-link')]")
+        reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
+        if reset_button:
             print("Reset button found, clicking now...")
-            click_js(driver, reset_buttons[0])
+            click_js(driver, reset_button)
         else:
             print("Reset button not found!")
