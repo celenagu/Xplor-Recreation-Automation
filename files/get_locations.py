@@ -4,6 +4,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time, json, csv
 
+# NOTE:
+# Run this on the main clients page immediately after logging in 
+
 # Constants
 TEST_ENVIRONMENT = True
 FILE_NAME = "locations.csv"
@@ -49,6 +52,7 @@ while True:
 		writer = csv.writer(file)
 		writer.writerow(["Location"])	# CSV header
 
+		# get all locations and populate csv file 
 		locations = driver.find_elements("xpath", "//li[contains(@class, 'k-item') and contains(@class, 'location')]//span[contains(@class, 'k-in')]")
 		for location in locations:
 			print(location.get_attribute("title"))
