@@ -66,10 +66,10 @@ while True:
     service_section_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]")
 
     # Scroll into view
-    driver.execute_script("arguments[0].scrollIntoView();", service_section_button)
-    time.sleep(1)  # Small delay to let the browser adjust
+    # driver.execute_script("arguments[0].scrollIntoView();", service_section_button)
+    # time.sleep(1)  # Small delay to let the browser adjust
 
-    service_section_button.click()
+    click_js(driver, service_section_button)
 
     # Wait for the drop-down options to load
     WebDriverWait(driver, 5).until(
@@ -93,19 +93,23 @@ while True:
 #---------------------------Selecting the right checkbox----------------------------------------
 
     # Needed to create a list and always select the 2nd checkbox as that would be the checkbox associated with current_name
-    list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'multi-select-filter-template')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'possible-options mCustomScrollbar _mCS_3 mCS-autoHide')]//div[@id='mCSB_3']//div[@id='mCSB_3_container']//ul[@data-bind='foreach: allItemsToShow']")                                                      
-    
-    # Ensure there are at least 2 items before accessing the second one
-    if len(list_items) >= 2:
-        second_li = list_items[1]
+    # list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'multi-select-filter-template')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'possible-options mCustomScrollbar _mCS_3 mCS-autoHide')]//div[@id='mCSB_3']//div[@id='mCSB_3_container']//ul[@data-bind='foreach: allItemsToShow']")                                                      
+    list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter')]//label[contains(@class, 'filters-checkbox')]")
+    click_js(driver, list_items[1])
 
-        # Locate the checkbox inside the second <li>
-        second_checkbox_label = second_li.find_element("xpath", ".//label[contains(@class, 'filters-checkbox')]")
+
+
+    # # Ensure there are at least 2 items before accessing the second one
+    # if len(list_items) >= 2:
+    #     second_li = list_items[1]
+
+    #     # Locate the checkbox inside the second <li>
+    #     second_checkbox_label = second_li.find_element("xpath", ".//label[contains(@class, 'filters-checkbox')]")
         
-        # Click the checkbox
-        second_checkbox_label.click()
-    else:
-        print("Less than 2 checkboxes found!")
+    #     # Click the checkbox
+    #     second_checkbox_label.click()
+    # else:
+    #     print("Less than 2 checkboxes found!")
 
 #-------------------------------Clicking on'Done'-----------------------------------------------
     # Locate and click the "Done" button
