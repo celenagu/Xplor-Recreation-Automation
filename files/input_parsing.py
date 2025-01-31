@@ -17,10 +17,10 @@ file = pd.read_csv(read_file_name)
 column_name = "Name"          
 names = file[column_name].dropna().tolist()  
 
-
 # Constants
 TEST_ENVIRONMENT = True
 FILE_NAME = "updating_timeline.csv"
+
 # login based on the environment
 if not TEST_ENVIRONMENT:
 	LOGIN_URL = "https://cityofbrampton.perfectmind.com/Menu/MemberRegistration/MemberSignIn"
