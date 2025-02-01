@@ -6,17 +6,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+
 import time, csv, json
 
 #constants
 read_file_name = "Service-Drop-Ins.csv"
+read_file_locs = "locations.csv"
 
 #reading the file
-file = pd.read_csv(read_file_name)
+file_names = pd.read_csv(read_file_name)
+file_locs = pd.read_csv(read_file_locs)
 
 #getting the names from the specified column
 column_name = "Name"          
-names = file[column_name].dropna().tolist()  
+names = file_names[column_name].dropna().tolist()  
+
+#getting locations
+column_loc = "Location"
+locs = file_locs[column_loc].dropna().tolist()
 
 # Constants
 TEST_ENVIRONMENT = True
@@ -49,15 +57,15 @@ def click_js(driver, elem):
 
 def wait_for_page_load(driver):
 	# waits for page to finish updating
-    try:
-        WebDriverWait(driver, 30).until(
-            lambda d: d.execute_script(
-                "return window.performance.getEntriesByType('resource').every(r => r.responseEnd > 0);"
-            )
-        )
-        print("Network requests completed.")
-    except TimeoutException:
-        print("Warning: Network idle check timed out.")
+	try:
+		WebDriverWait(driver, 30).until(
+			lambda d: d.execute_script(
+				"return window.performance.getEntriesByType('resource').every(r => r.responseEnd > 0);"
+			)
+		)
+		print("Network requests completed.")
+	except TimeoutException:
+		print("Warning: Network idle check timed out.")
 
 def process_page(driver, event_data, edit_buttons, original_tab, new_date):
 	# looping through each program on the page, for each event:
@@ -86,7 +94,7 @@ def process_page(driver, event_data, edit_buttons, original_tab, new_date):
 
 		# Dismiss overlay alerts blocking view
 		while True:
-			overlay_notif = driver.find_elements("xpath", "//div[contains(@class, 'k-animation-container')]//div[contains(@class, alert)]")
+			overlay_notif = driver.find_elements(By.XPATH, "//div[contains(@class, 'k-animation-container')]//div[contains(@class, alert)]")
 
 			if not overlay_notif:
 				break
@@ -171,7 +179,103 @@ def process_page(driver, event_data, edit_buttons, original_tab, new_date):
 
 		driver.close()
 		driver.switch_to.window(original_tab)
+
+def process_page_exceed(driver, new_date, locs):
+	# processing page according to locations
+	MAX_RETRIES = 3
+	for curr_loc in locs:
+
+
+		try:
+			
+			reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-locations-filter')]//span[contains(@class, 'reset-filter-link')]")
+			click_js(driver, reset_button)
+			print("Resetting...")
+			time.sleep(3)
+
+			# locate location dropbox
+			location_section_button = driver.find_element("xpath", "//div[contains(@class, 'search-locations-filter')]//div[contains(@class, 'filter-pick-list')]")
+			click_js(driver, location_section_button)
+
+			# wait for dropdown to load
+			WebDriverWait(driver, 5).until(
+				EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-locations-filter')]//div[contains(@class, 'filter-pick-list')]"))
+			)
+
+
+			time.sleep(2)
+
+			print("search bar")
+			# type into search bar
+			search_input = WebDriverWait(driver, 10).until(
+				EC.element_to_be_clickable(
+					(By.XPATH, "//div[contains(@class, 'search-locations-filter')]//div[contains(@class, 'search-area')]//input[contains(@class, 'search-text')]")
+				)
+			)
+			print(search_input.get_attribute("outerHTML"))
+
+			search_input.click()
+			search_input.send_keys(curr_loc)
+
+			time.sleep(2)
+
+			# # retrieve all checkboxes
+			list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-locations-filter')]//label[contains(@class, 'filters-checkbox')]")
+
+			# Filter only visible elements
+			visible_list_items = [item for item in list_items if item.is_displayed()]
+
+			print(f"Number of visible items: {len(visible_list_items)}")
+			print(visible_list_items[2].text)
+			click_js(driver, visible_list_items[2])
+
+
+			# Locate and click the "Done" button
+			done_button = driver.find_element("xpath", "//div[contains(@class, 'search-locations-filter')]//div[contains(@class, 'done-btn')]")
+			done_button.click()
+
+			time.sleep(5) # allow UI update
+
+			
+		except Exception as e:
+			print(str(e))
+
+
+		# check to see if current service has events, if none, skip
+		driver.implicitly_wait(1) 
+		check_present = driver.find_elements(By.XPATH, "//td[@colspan='23']")
+		if check_present:
+			print("No events, skip")
+			driver.implicitly_wait(10)
+			continue
+		driver.implicitly_wait(10)
 		
+		# Extract currently visible events
+		event_data = driver.find_elements("xpath", "//div[contains(@class, 'grid-panel')]//div[contains(@class, 'activity-name')]")
+
+		# Extract edit buttons
+		edit_buttons = driver.find_elements("xpath", "//div[contains(@class, 'grid-panel')]//span[contains(@class, 'edit-text') and contains(@class, 'edit-event')]")
+
+		print(f"Number of programs: {len(event_data)}")
+		print(f"Number of edit buttons: {len(edit_buttons)}")
+
+		original_tab = driver.current_window_handle
+		
+		# if the current service exceeds 100 events, make note
+		if len(event_data) == 100:
+			try:
+				limit = driver.find_element(By.XPATH, "//span[contains(@class, 'events-limit-exceeded-text-bold')]")
+				if limit:
+					print("Events limit exceeded:")
+					continue
+			except Exception:
+				pass
+
+		# otherwise (0, 100] events, process as normal
+		process_page(driver, event_data, edit_buttons, original_tab, new_date)
+		
+		time.sleep(2)
+
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 # Open website and login
@@ -182,95 +286,103 @@ action = ActionChains(driver)
 
 #---------------------------------OVERALL LOOP------------------------------------------------
 while True:
-    user_input = input("Press ENTER to start/continue or type 'exit' to end: ").strip().lower()
+	user_input = input("Press ENTER to start/continue or type 'exit' to end: ").strip().lower()
 
-    if user_input == "exit":
-        break
+	if user_input == "exit":
+		break
 
-    with open(FILE_NAME, "w", newline="", encoding="utf-8") as file:
-        # for populating csv file
-        writer = csv.writer(file)
-        writer.writerow(["Event"])
+	with open(FILE_NAME, "w", newline="", encoding="utf-8") as file:
+		# for populating csv file
+		writer = csv.writer(file)
+		writer.writerow(["Event"])
 #-----------------------------Looping through csv file------------------------------------------
-        for current_names in names:
+		for current_names in names:
+
+#---------------------------------Clicking Reset-----------------------------------------------
+			reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
+			if reset_button:
+				print("Reset button found, clicking now...")
+				click_js(driver, reset_button)
+			else:
+				print("Reset button not found!")
+
+			time.sleep(5)
 		
 #-----------------------------Finding the 'Section'--------------------------------------------
-            #Locating the button
-            service_section_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]")
+			#Locating the button
+			service_section_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]")
 
-            click_js(driver, service_section_button)
+			click_js(driver, service_section_button)
 
-            # Wait for the drop-down options to load
-            WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]"))
-            )
+			# Wait for the drop-down options to load
+			WebDriverWait(driver, 5).until(
+				EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]"))
+			)
 		
 #-----------------------------Typing into the search bar------------------------------------------
-            search_input = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'search-area focused')]//input[contains(@class, 'serch-text')]")
-                )
-            )
+			search_input = WebDriverWait(driver, 10).until(
+				EC.element_to_be_clickable(
+					(By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'search-area focused')]//input[contains(@class, 'serch-text')]")
+				)
+			)
 
-            search_input.click()  # Click to activate it
-            search_input.send_keys(current_names)
+			search_input.click()  # Click to activate it
+			search_input.send_keys(current_names)
 
-            time.sleep(1) 
+			time.sleep(1) 
+
 #---------------------------Selecting the right checkbox----------------------------------------
 
-            # Needed to create a list and always select the 2nd checkbox as that would be the checkbox associated with current_name                                                     
-            list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'filter-selectable-options-list')]//label[contains(@class, 'filters-checkbox')]")
-            click_js(driver, list_items[0])
-            click_js(driver, list_items[1])
-            time.sleep(1)
-            
+			# checkbox is by default set to all                                                
+			list_items = driver.find_elements(By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'filter-selectable-options-list')]//label[contains(@class, 'filters-checkbox')]")
+			list_items[0].click()
+			print("click")
+			time.sleep(1)
+			print("done")
+			
 #-------------------------------Clicking on'Done'-----------------------------------------------
-            # Locate and click the "Done" button
-            done_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]")
-            done_button.click()
+			# Locate and click the "Done" button
+			done_button = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]")
+			done_button.click()
+
  #----------------------------------Celena's Code-----------------------------------------------
 
-            #For now a temporary question
-            temp_question = input("Press ENTER to confirm that fees and timelines have been adjusted for this Service: ").strip().lower()
+			#For now a temporary question
+			temp_question = input("Press ENTER to confirm that fees and timelines have been adjusted for this Service: ").strip().lower()
+
+			# check to see if current service has events, if none, skip
+			driver.implicitly_wait(0) 
+			check_present = driver.find_elements(By.XPATH, "//td[@colspan='23']")
+			if check_present:
+				print("No events, skip")
+				driver.implicitly_wait(10)
+				continue
+			driver.implicitly_wait(10)
 			
-            # Extract currently visible events
-            event_data = driver.find_elements("xpath", "//div[contains(@class, 'grid-panel')]//div[contains(@class, 'activity-name')]")
+			# Extract currently visible events
+			event_data = driver.find_elements(By.XPATH, "//div[contains(@class, 'grid-panel')]//div[contains(@class, 'activity-name')]")
 
-            # Extract edit buttons
-            edit_buttons = driver.find_elements("xpath", "//div[contains(@class, 'grid-panel')]//span[contains(@class, 'edit-text') and contains(@class, 'edit-event')]")
+			# Extract edit buttons
+			edit_buttons = driver.find_elements(By.XPATH, "//div[contains(@class, 'grid-panel')]//span[contains(@class, 'edit-text') and contains(@class, 'edit-event')]")
 
-            print(f"Number of programs: {len(event_data)}")
-            print(f"Number of edit buttons: {len(edit_buttons)}")
+			print(f"Number of programs: {len(event_data)}")
+			print(f"Number of edit buttons: {len(edit_buttons)}")
 
-            original_tab = driver.current_window_handle
-
-            # if the current service has no events, skip
-            if len(event_data) == 0:
-                print("No events, skip")
-                continue
-            
-            # if the current service exceeds 100 events, do extra processing
-            elif len(event_data) == 100:
-                try:
-                    limit = driver.find_element(By.XPATH, "//span[contains(@class, 'events-limit-exceeded-text-bold')]")
-                    if limit:
-                        print("Events limit exceeded")
-                        continue
-                except Exception:
-                    pass
-
-            # otherwise (0, 100] events, process as normal
-            process_page(driver, event_data, edit_buttons, original_tab, new_date)
+			original_tab = driver.current_window_handle
 			
-            time.sleep(2)
-            
+			# if the current service exceeds 100 events, do extra processing
+			if len(event_data) == 100:
+				try:
+					limit = driver.find_element(By.XPATH, "//span[contains(@class, 'events-limit-exceeded-text-bold')]")
+					if limit:
+						print("Events limit exceeded")
+						process_page_exceed(driver, new_date, locs)
+						continue
+				except Exception as e:
+					print(f"Exception occured: {str(e)}")
 
- #---------------------------------Clicking Reset-----------------------------------------------
-            # reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
-            # if reset_button:
-            #     print("Reset button found, clicking now...")
-            #     click_js(driver, reset_button)
-            # else:
-            #     print("Reset button not found!")
-
-            # time.sleep(2)
+			# otherwise (0, 100] events, process as normal
+			process_page(driver, event_data, edit_buttons, original_tab, new_date)
+			
+			time.sleep(2)
+			

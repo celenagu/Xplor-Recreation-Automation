@@ -87,6 +87,7 @@ while True:
 
         # Needed to create a list and always select the 2nd checkbox as that would be the checkbox associated with current_name                                                     
         list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'filter-selectable-options-list')]//label[contains(@class, 'filters-checkbox')]")
+        click_js(driver, list_items[0])
         click_js(driver, list_items[1])
         time.sleep(1)
 		
@@ -99,11 +100,11 @@ while True:
         temp_question = input("Press ENTER to confirm that fees and timelines have been adjusted for this Service: ").strip().lower()
 
  #---------------------------------Clicking Reset-----------------------------------------------
-        reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
-        if reset_button:
-            print("Reset button found, clicking now...")
-            click_js(driver, reset_button)
-        else:
-            print("Reset button not found!")
+        # reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
+        # if reset_button:
+        #     print("Reset button found, clicking now...")
+        #     click_js(driver, reset_button)
+        # else:
+        #     print("Reset button not found!")
 
-        time.sleep(2)
+        # time.sleep(2)
