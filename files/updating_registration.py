@@ -85,7 +85,7 @@ def process_page(driver, event_data, edit_buttons, original_tab, new_date):
 		# -------------------------- IN EDIT PANEL -------------------------
 
 		# ------------ In repeat tab --------------------
-		repeat_tab = WebDriverWait(driver, 15).until(
+		repeat_tab = WebDriverWait(driver, 30).until(
 			EC.element_to_be_clickable((By.XPATH, "//ul[contains(@class, 'edit-event-header')]//li[@id='editEventTabs-tab-2']"))
 		)
 
@@ -205,21 +205,19 @@ def process_page_exceed(driver, new_date, locs):
 
 			time.sleep(2)
 
-			print("search bar")
 			# type into search bar
 			search_input = WebDriverWait(driver, 10).until(
 				EC.element_to_be_clickable(
 					(By.XPATH, "//div[contains(@class, 'search-locations-filter')]//div[contains(@class, 'search-area')]//input[contains(@class, 'search-text')]")
 				)
 			)
-			print(search_input.get_attribute("outerHTML"))
 
 			search_input.click()
 			search_input.send_keys(curr_loc)
 
 			time.sleep(2)
 
-			# # retrieve all checkboxes
+			# retrieve all checkboxes
 			list_items = driver.find_elements("xpath", "//div[contains(@class, 'search-locations-filter')]//label[contains(@class, 'filters-checkbox')]")
 
 			# Filter only visible elements
@@ -234,7 +232,7 @@ def process_page_exceed(driver, new_date, locs):
 			done_button = driver.find_element("xpath", "//div[contains(@class, 'search-locations-filter')]//div[contains(@class, 'done-btn')]")
 			done_button.click()
 
-			time.sleep(5) # allow UI update
+			time.sleep(10) # allow UI update
 
 			
 		except Exception as e:
@@ -299,6 +297,8 @@ while True:
 		for current_names in names:
 
 #---------------------------------Clicking Reset-----------------------------------------------
+			print("")
+
 			reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
 			if reset_button:
 				print("Reset button found, clicking now...")
@@ -326,6 +326,9 @@ while True:
 				)
 			)
 
+			print(f"Service: {current_names}")
+			print("")
+
 			search_input.click()  # Click to activate it
 			search_input.send_keys(current_names)
 
@@ -336,9 +339,7 @@ while True:
 			# checkbox is by default set to all                                                
 			list_items = driver.find_elements(By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'filter-selectable-options-list')]//label[contains(@class, 'filters-checkbox')]")
 			list_items[0].click()
-			print("click")
 			time.sleep(1)
-			print("done")
 			
 #-------------------------------Clicking on'Done'-----------------------------------------------
 			# Locate and click the "Done" button
@@ -366,7 +367,7 @@ while True:
 			edit_buttons = driver.find_elements(By.XPATH, "//div[contains(@class, 'grid-panel')]//span[contains(@class, 'edit-text') and contains(@class, 'edit-event')]")
 
 			print(f"Number of programs: {len(event_data)}")
-			print(f"Number of edit buttons: {len(edit_buttons)}")
+			# print(f"Number of edit buttons: {len(edit_buttons)}")
 
 			original_tab = driver.current_window_handle
 			

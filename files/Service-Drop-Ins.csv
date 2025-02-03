@@ -1,17 +1,4 @@
 ﻿Name,Service Type,Setup Time (Mins),Validate Membership on Fee,RowNumber
-"(Employees ONLY) Drop-In Fitness and Wellness","Single Booking",0,True,1
-"Drop-In Animals","Single Booking",0,False,2
-"Drop-In Aquafit","Single Booking",0,True,3
-"Drop-In Aquatic Skills Practice","Single Booking",0,True,4
-"Drop-In Badminton","Single Booking",0,True,5
-"Drop-In Ball and Floor Hockey","Single Booking",0,True,6
-"Drop-In Basketball","Single Booking",0,True,7
-"Drop-In Cardio Exercise","Single Booking",0,True,8
-"Drop-In Child and Youth","Single Booking",0,True,9
-"Drop-In Cricket","Single Booking",0,True,10
-"Drop-In Curling","Single Booking",0,False,11
-"Drop-In Dodgeball","Single Booking",0,True,12
-"Drop-In Figure Skating","Single Booking",0,True,13
 "Drop-In Fitness (Outdoor)","Single Booking",0,True,14
 "Drop-In Fitness Centre","Single Booking",0,True,15
 "Drop-In Fitness Consultation","Single Booking",0,True,16
