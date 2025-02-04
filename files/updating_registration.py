@@ -223,10 +223,8 @@ def process_page_exceed(driver, new_date, locs):
 			# Filter only visible elements
 			visible_list_items = [item for item in list_items if item.is_displayed()]
 
-			print(f"Number of visible items: {len(visible_list_items)}")
 			print(visible_list_items[2].text)
 			click_js(driver, visible_list_items[2])
-
 
 			# Locate and click the "Done" button
 			done_button = driver.find_element("xpath", "//div[contains(@class, 'search-locations-filter')]//div[contains(@class, 'done-btn')]")
@@ -255,7 +253,7 @@ def process_page_exceed(driver, new_date, locs):
 		edit_buttons = driver.find_elements("xpath", "//div[contains(@class, 'grid-panel')]//span[contains(@class, 'edit-text') and contains(@class, 'edit-event')]")
 
 		print(f"Number of programs: {len(event_data)}")
-		print(f"Number of edit buttons: {len(edit_buttons)}")
+		# print(f"Number of edit buttons: {len(edit_buttons)}")
 
 		original_tab = driver.current_window_handle
 		
