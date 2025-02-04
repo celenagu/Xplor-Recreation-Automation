@@ -11,20 +11,15 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 import time, csv, json
 
 #constants
-read_file_name = "Service-Drop-Ins.csv"
-read_file_locs = "locations.csv"
+read_file_name = "barcodes-csv.csv"
 
 #reading the file
 file_names = pd.read_csv(read_file_name)
-file_locs = pd.read_csv(read_file_locs)
 
 #getting the names from the specified column
-column_name = "Name"          
-names = file_names[column_name].dropna().tolist()  
+column_name = "EventID"          
+all_barcodes = file_names[column_name].dropna().tolist()  
 
-#getting locations
-column_loc = "Location"
-locs = file_locs[column_loc].dropna().tolist()
 
 # Constants
 TEST_ENVIRONMENT = True
@@ -292,57 +287,21 @@ while True:
 		writer = csv.writer(file)
 		writer.writerow(["Event"])
 #-----------------------------Looping through csv file------------------------------------------
-		for current_names in names:
-
-#---------------------------------Clicking Reset-----------------------------------------------
-			print("")
-
-			reset_button  = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//span[contains(@class, 'reset-filter-link')]")
-			if reset_button:
-				print("Reset button found, clicking now...")
-				click_js(driver, reset_button)
-			else:
-				print("Reset button not found!")
-
-			time.sleep(5)
+		for barcode in all_barcodes:
 		
 #-----------------------------Finding the 'Section'--------------------------------------------
 			#Locating the button
-			service_section_button = driver.find_element("xpath", "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]")
+			keyword_button = driver.find_element("xpath", "//div[contains(@class, 'k-content')]//div[contains(@class, 'pm-search-wrapper search-input-container')]//input[@type='text']")
 
-			click_js(driver, service_section_button)
+			click_js(driver, keyword_button)
+			print("found it")
 
-			# Wait for the drop-down options to load
-			WebDriverWait(driver, 5).until(
-				EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-pick-list')]"))
-			)
-		
-#-----------------------------Typing into the search bar------------------------------------------
-			search_input = WebDriverWait(driver, 10).until(
-				EC.element_to_be_clickable(
-					(By.XPATH, "//div[contains(@class, 'search-service-filter filter-custom-section-with-popup')]//div[contains(@class, 'filter-selectable-options-list')]//div[contains(@class, 'search-area focused')]//input[contains(@class, 'serch-text')]")
-				)
-			)
-
-			print(f"Service: {current_names}")
-			print("")
-
-			search_input.click()  # Click to activate it
-			search_input.send_keys(current_names)
-
-			time.sleep(1) 
-
-#---------------------------Selecting the right checkbox----------------------------------------
-
-			# checkbox is by default set to all                                                
-			list_items = driver.find_elements(By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'filter-selectable-options-list')]//label[contains(@class, 'filters-checkbox')]")
-			list_items[0].click()
+			#keyword_button.click()  # Click to activate it
+			modified_barcode = "00" + str(barcode)
+			keyword_button.send_keys(modified_barcode)
 			time.sleep(1)
-			
-#-------------------------------Clicking on'Done'-----------------------------------------------
-			# Locate and click the "Done" button
-			done_button = driver.find_element(By.XPATH, "//div[contains(@class, 'search-service-filter')]//div[contains(@class, 'done-btn')]")
-			done_button.click()
+			keyword_button.send_keys(Keys.ENTER)
+			time.sleep(1)
 
  #----------------------------------Celena's Code-----------------------------------------------
 
