@@ -156,14 +156,14 @@ while True:
         writer.writerow(["Event"])
 #-----------------------------Looping through csv file------------------------------------------
         for barcode in all_barcodes:
-            print(barcode)
+            print("")
+            print(f"Processing barcode: {barcode}")
        
 #-----------------------------Search by barcode--------------------------------------------
             #Locating the button
             keyword_button = driver.find_element("xpath", "//div[contains(@class, 'k-content')]//div[contains(@class, 'pm-search-wrapper search-input-container')]//input[@type='text']")
  
             click_js(driver, keyword_button)
-            print("found it")
  
             modified_barcode = "00" + str(barcode)
             keyword_button.clear()

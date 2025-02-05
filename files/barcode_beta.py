@@ -68,7 +68,7 @@ def process_page(driver, event_data, edit_buttons, original_tab, new_date, barco
 		print("")
 		print(f"Processing index: {idx}")
 		print(event_name)
-		writer.writerow([event_name, barcode])
+		writer.writerow([barcode, event_name])
  
 		# click edit and focus on new tab
 		click_js(driver, edit_buttons[idx])
@@ -129,6 +129,8 @@ def process_page(driver, event_data, edit_buttons, original_tab, new_date, barco
 			pass
  
 		print("Saved.")
+		
+		time.sleep(2)
  
 		driver.close()
 		driver.switch_to.window(original_tab)
@@ -153,7 +155,7 @@ while True:
 	with open(FILE_NAME, "w", newline="", encoding="utf-8") as file:
 		# for populating csv file
 		writer = csv.writer(file)
-		writer.writerow(["Event", "Barcode"])
+		writer.writerow(["Barcode", "Event"])
 #-----------------------------Looping through csv file------------------------------------------
 		for barcode in all_barcodes:
 	   
@@ -169,7 +171,7 @@ while True:
 			keyword_button.send_keys(modified_barcode)
 			time.sleep(1)
 			keyword_button.send_keys(Keys.ENTER)
-			time.sleep(2)
+			time.sleep(3)
  
  #----------------------------------Update program times-----------------------------------------------
  
@@ -179,7 +181,7 @@ while True:
 			driver.implicitly_wait(0)
 			check_present = driver.find_elements(By.XPATH, "//td[@colspan='23']")
 			if check_present:
-				print("No events, skip")
+				print(f"No events, skip barcode: {barcode}")
 				driver.implicitly_wait(10)
 				continue
 			driver.implicitly_wait(10)
