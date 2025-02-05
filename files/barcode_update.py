@@ -165,19 +165,14 @@ while True:
             click_js(driver, keyword_button)
             print("found it")
  
-            #keyword_button.click()  # Click to activate it
             modified_barcode = "00" + str(barcode)
             keyword_button.clear()
-            # action.key_down(Keys.CONTROL).key_down('a').perform()
             keyword_button.send_keys(modified_barcode)
             time.sleep(1)
             keyword_button.send_keys(Keys.ENTER)
             time.sleep(1)
  
  #----------------------------------Update program times-----------------------------------------------
- 
-            #For now a temporary question
-            temp_question = input("Press ENTER to confirm that fees and timelines have been adjusted for this Service: ").strip().lower()
  
             # check to see if current service has events, if none, skip
             driver.implicitly_wait(0)
@@ -193,8 +188,6 @@ while True:
  
             # Extract edit buttons
             edit_buttons = driver.find_elements(By.XPATH, "//div[contains(@class, 'grid-panel')]//span[contains(@class, 'edit-text') and contains(@class, 'edit-event')]")
- 
-            # print(f"Number of programs: {len(event_data)}")
  
             original_tab = driver.current_window_handle
            
@@ -213,5 +206,4 @@ while True:
            
             time.sleep(2)
            
- 
  
