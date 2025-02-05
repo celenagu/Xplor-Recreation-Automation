@@ -22,7 +22,7 @@ all_barcodes = file_names[column_name].dropna().tolist()
  
 # Constants
 TEST_ENVIRONMENT = True
-FILE_NAME = "updated_barcodes.csv"
+FILE_NAME = "updating_beta.csv"
 new_date = "2025-03-23"
  
 # login based on the environment

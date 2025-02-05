@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 import time, csv, json
  
 #constants
-read_file_name = "barcodes-csv.csv"
+read_file_name = "barcodes_test.csv"
  
 #reading the file
 file_names = pd.read_csv(read_file_name)
