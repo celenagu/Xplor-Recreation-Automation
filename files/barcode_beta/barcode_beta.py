@@ -22,7 +22,7 @@ all_barcodes = file_names[column_name].dropna().tolist()
  
 # Constants
 TEST_ENVIRONMENT = True
-FILE_NAME = "updating_beta.csv"
+FILE_NAME = "updated_barcodes.csv"
 new_date = "2025-03-23"
  
 # login based on the environment
@@ -99,7 +99,7 @@ def process_page(driver, event_data, edit_buttons, original_tab, new_date, barco
 				except Exception:
 					pass
 		
-		time.sleep(2)
+		time.sleep(3)
  
 		# ----------- update date ---------------------
  
@@ -107,7 +107,7 @@ def process_page(driver, event_data, edit_buttons, original_tab, new_date, barco
 		date.click()
 		action.key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE).perform()
 		driver.execute_script("arguments[0].value = arguments[1];", date, new_date)
-		date.send_keys(Keys.ENTER)
+		# date.send_keys(Keys.ENTER)
 	   
 		# trigger update
 		action.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
@@ -156,6 +156,7 @@ while True:
 		# for populating csv file
 		writer = csv.writer(file)
 		writer.writerow(["Barcode", "Event"])
+
 #-----------------------------Looping through csv file------------------------------------------
 		for barcode in all_barcodes:
 	   
