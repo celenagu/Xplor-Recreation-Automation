@@ -11,6 +11,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 import time, csv, json
  
 read_file_name = "demo_barcodes.csv"
+# read_file_name = "barcodes_test.csv"
  
 #reading the file
 file_names = pd.read_csv(read_file_name, dtype={"EventID": str})
@@ -48,28 +49,8 @@ def log_save(file, s):
 def click_js(driver, elem):
     # click element using JavaScript
     driver.execute_script("arguments[0].click();", elem)
- 
-# def wait_for_page_load(driver):
-#     # waits for page to finish updating
-#     try:
-#         WebDriverWait(driver, 30).until(
-#             lambda d: d.execute_script(
-#                 "return window.performance.getEntriesByType('resource').every(r => r.responseEnd > 0);"
-#             )
-#         )
-#         print("Network requests completed.")
-#     except TimeoutException:
-#         print("Warning: Network idle check timed out.")
 
-def wait_for_loader_to_disappear(driver, loader_css=".loading-container", timeout=30):
-    """
-    Waits until the loading indicator disappears (i.e., its display style becomes 'none').
-    
-    Args:
-        driver: Selenium WebDriver instance
-        loader_css: CSS selector of the loading container (default: ".loading-container")
-        timeout: Maximum time to wait for the loader to disappear (default: 30s)
-    """
+def wait_for_loader_to_disappear(driver, loader_css, timeout=40):
     try:
         WebDriverWait(driver, timeout).until(
             EC.invisibility_of_element_located((By.CSS_SELECTOR, loader_css))

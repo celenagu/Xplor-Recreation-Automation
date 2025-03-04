@@ -25,3 +25,4 @@
 * If fee already exists under facility, that the price is updated instead of added.
 
 * Currently optimized to add Affiliated/BOED tournament fees for Minor, Mini, and School fields. 
+
