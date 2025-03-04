@@ -86,7 +86,7 @@ while True:
 			# iterate over fees ----> ISSUE: LISTS START AT INDEX 0
 			for fee_idx in range(0, len(fee_data)):
 				fee_name = fee_data[fee_idx].get("PriceTypeName")
-				is_deleted = "Yes" if any(year in fee_name for year in ["2020", "2021", "2022", "2023"]) else "No"
+				is_deleted = "Yes" if "Affiliated/BOED [Jan. 2025]" in fee_name else "No"
 
 				# write data to CSV
 				writer.writerow([curr_facility, fee_name, is_deleted])
