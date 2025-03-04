@@ -16,6 +16,8 @@
 
 ### add_fees.py
 
+* IMPORTANT: add_fees.py also has the ability to update existing fees 
+
 * Added ability to continuously specify start and end indices for facilities to update without having to refresh (debugging purposes).
 
 * Optimized page navigation -> avoids navigating back to overview page when accessing facilities.
