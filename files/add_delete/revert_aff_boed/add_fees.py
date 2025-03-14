@@ -47,6 +47,10 @@ fee_names = ["Affiliated - Tournament (4-6HRS) [Jan. 2025]",
              "BOED - Tournament (6-9HRS) [Jan. 2025]",
              "BOED - Tournament (9+HRS) [Jan. 2025]",
               "Affiliated/BOED [Jan. 2025]"]
+<<<<<<< HEAD
+=======
+
+>>>>>>> c52c6479c3d8210e073ea2fc9ebc38b6717a0cf3
 fee_amounts_minor = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 fee_amounts_school = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 # --------------------------------------------------
