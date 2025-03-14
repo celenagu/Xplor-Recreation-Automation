@@ -40,10 +40,15 @@ action = ActionChains(driver)
 
 # ---------------- EDIT AS NEEDED ----------------
 # fee names and fee amounts should coordinate with each other 
-fee_names = ["Affiliated/BOED [Jan. 2025]"]
-
-fee_amounts_minor = [0.00]
-fee_amounts_school = [0.00]
+fee_names = ["Affiliated - Tournament (4-6HRS) [Jan. 2025]",
+             "Affiliated - Tournament (6-9HRS) [Jan. 2025]",
+             "Affiliated - Tournament (9+HRS) [Jan. 2025]",
+             "BOED - Tournament (4-6HRS) [Jan. 2025]",
+             "BOED - Tournament (6-9HRS) [Jan. 2025]",
+             "BOED - Tournament (9+HRS) [Jan. 2025]",
+              "Affiliated/BOED [Jan. 2025]"]
+fee_amounts_minor = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+fee_amounts_school = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 # --------------------------------------------------
 
 while True:

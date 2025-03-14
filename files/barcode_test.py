@@ -9,8 +9,10 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
  
 import time, csv, json
+
+from webdriver_manager.chrome import ChromeDriverManager
  
-read_file_name = "demo_barcodes.csv"
+read_file_name = "new_barcodes.csv"
 # read_file_name = "barcodes_test.csv"
  
 #reading the file
@@ -22,7 +24,7 @@ all_barcodes = file_names[column_name].dropna().tolist()
  
  
 # Constants
-TEST_ENVIRONMENT = True
+TEST_ENVIRONMENT = False
 FILE_NAME = "update_log.csv"
 new_date = "2025-03-23"
  
@@ -37,7 +39,7 @@ else:
     print("===TEST MODE===")
  
 # Webdriver Initialization
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(ChromeDriverManager().install())
 driver.implicitly_wait(10)
  
 # ----------------------------------- FUNCTIONS ------------------------------------------------------------------------
