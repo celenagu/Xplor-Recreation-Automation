@@ -134,5 +134,8 @@ while True:
 					back = driver.find_element(By.XPATH, "//a[contains(@class, 'back-button-link')]")
 					click_js(driver, back)
 
+
 			except Exception as e:
 				print(f"Failed to update account index {curr_idx} due to error:\n{e}")
+
+		# After processing all accounts, prompt user to go to next page if end_idx == 1000
