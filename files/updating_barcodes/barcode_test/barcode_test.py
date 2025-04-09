@@ -13,7 +13,6 @@ import time, csv, json
 from webdriver_manager.chrome import ChromeDriverManager
  
 read_file_name = "new_barcodes_2.csv"
-# read_file_name = "barcodes_test.csv"
  
 #reading the file
 file_names = pd.read_csv(read_file_name, dtype={"EventID": str})
