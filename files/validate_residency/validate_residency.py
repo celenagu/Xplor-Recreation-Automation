@@ -94,6 +94,12 @@ while True:
 				"Account ID": ""
 			}
 
+			client_data = {
+				"First Name": "",
+				"Last Name": "",
+				"Client ID": ""
+			}
+
 			# Attempt click account
 			try: 
 				driver.get(url)	# open next account in new tab
@@ -110,14 +116,21 @@ while True:
 
 
 				for client in clients:
-					print(client)
 					click_js(driver, client)
 					WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "box-tab-caption-active")))
 
 					input("Paused. Press Enter to continue...")
 
+					# Fetch client data
+					client_data["First Name"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'FirstName-wrapper')]//div[contains(@class, 'field-web-control')]").text
+					client_data["Last Name"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'LastName-wrapper')]//div[contains(@class, 'field-web-control')]").text
+					client_data["Client ID"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'RecordName-wrapper')]//div[contains(@class, 'field-web-control')]").text
+
 					# Handle updating residency
 
+					# Populate CSV file
+
+					# Navigate back to accounts
 					back = driver.find_element(By.XPATH, "//a[contains(@class, 'back-button-link')]")
 					click_js(driver, back)
 
