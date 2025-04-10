@@ -66,7 +66,7 @@ while True:
 
     #ERROR HERE
     #locate where the toggle for the 'Validation' section
-    validation_button = driver.find_element(By.XPATH, "//div[contains(@class, 'Checkbox-wrapper AccountValidation-wrapper')]//i[contains(@class, 'xpl-toggle')]")
+    validation_button = driver.find_element("xpath", "//tr[contains(@class, 'AccountValidation-wrapper')]//input[contains(@class, 'xpl-toggle')]")
     print("found it")
 
     #check to see if its been clicked or not -> its True if its been clicked and False if it hasn't been clicked yet
