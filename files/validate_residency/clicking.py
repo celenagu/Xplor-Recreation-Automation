@@ -62,11 +62,12 @@ while True:
     #find the edit button
     edit_button = driver.find_element(By.ID, "editObject")
     click_js(driver, edit_button)
-    time.sleep(1)
+    time.sleep(2)
 
     #ERROR HERE
     #locate where the toggle for the 'Validation' section
-    validation_button = driver.find_element("xpath", "//div[contains(@class, 'Checkbox-wrapper AccountValidation-wrapper')]//i[contains(@class, 'xpl-toggle k-valid')]")
+    validation_button = driver.find_element(By.XPATH, "//div[contains(@class, 'Checkbox-wrapper AccountValidation-wrapper')]//i[contains(@class, 'xpl-toggle')]")
+    print("found it")
 
     #check to see if its been clicked or not -> its True if its been clicked and False if it hasn't been clicked yet
     status_check = driver.find_element("xpath", "//div[contains(@class, 'Checkbox-wrapper AccountValidation-wrapper')]//i[contains(@class, 'field-web-control')]//i[contains(@class, 'pmFieldDependency')]")
