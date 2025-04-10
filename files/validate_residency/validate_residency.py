@@ -56,6 +56,7 @@ action = ActionChains(driver)
 # (May change later)
 
 while True:
+	print()
 	user_input = input("Press ENTER to start/continue or type 'exit' to end: ").strip().lower()
  
 	if user_input == "exit":
@@ -74,12 +75,11 @@ while True:
 	with open(FILE_NAME, "w", newline="", encoding="utf-8") as file:
 		# for populating csv file
 		writer = csv.writer(file)
-		writer.writerow(["Client Name", "Account Name", "Account Type", "Account Category", "Account ID", "Client Contact ID", "Validated?"])
+		writer.writerow(["Client Name (First)", "Client Name (Last)", "Client Contact ID", "Account Name", "Account Type", "Account Category", "Account ID", "Validated?"])
 			
 		# Open up new window
 		source_window = driver.current_window_handle
 		driver.execute_script("window.open('');")
-
 		all_windows = driver.window_handles
 		driver.switch_to.window(all_windows[-1])
 		
@@ -110,32 +110,79 @@ while True:
 				account_data["Account Type"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'AccountType-wrapper')]//div[contains(@class, 'field-web-control')]").text
 				account_data["Account Category"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'AccountCategory-wrapper')]//div[contains(@class, 'field-web-control')]").text
 				account_data["Account ID"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'RecordName-wrapper')]//div[contains(@class, 'field-web-control')]").text
-				
+
+				# Reset client
+				client_data["First Name"] = ""
+				client_data["Last Name"] = ""
+				client_data["Client ID"] = ""
+
 				# get clients associated with account
 				clients = driver.find_elements("xpath", "//li[contains(@class, 'family-member') and not (@id='family-member-template')]//h3[contains(@class, 'family-member-name')]")
 
 
-				for client in clients:
-					click_js(driver, client)
-					WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "box-tab-caption-active")))
+				for index in range(len(clients)):
+					try: 
+						clients = driver.find_elements("xpath", "//li[contains(@class, 'family-member') and not (@id='family-member-template')]//h3[contains(@class, 'family-member-name')]")
+						click_js(driver, clients[index])
+						WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "box-tab-caption-active")))
 
-					input("Paused. Press Enter to continue...")
+						# Fetch client data
+						client_data["First Name"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'FirstName-wrapper')]//div[contains(@class, 'field-web-control')]").text
+						client_data["Last Name"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'LastName-wrapper')]//div[contains(@class, 'field-web-control')]").text
+						client_data["Client ID"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'RecordName-wrapper')]//div[contains(@class, 'field-web-control')]").text
 
-					# Fetch client data
-					client_data["First Name"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'FirstName-wrapper')]//div[contains(@class, 'field-web-control')]").text
-					client_data["Last Name"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'LastName-wrapper')]//div[contains(@class, 'field-web-control')]").text
-					client_data["Client ID"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'RecordName-wrapper')]//div[contains(@class, 'field-web-control')]").text
+						# Handle updating residency
 
-					# Handle updating residency
+						# Populate CSV file
+						writer.writerow([
+							client_data["First Name"], 
+							client_data["Last Name"], 
+							client_data["Client ID"],
+							account_data["Account Name"], 
+							account_data["Account Type"], 
+							account_data["Account Category"], 
+							account_data["Account ID"], 
+							True
+						])
 
-					# Populate CSV file
+						# Navigate back to accounts
+						back = driver.find_element(By.XPATH, "//a[contains(@class, 'back-button-link')]")
+						click_js(driver, back)
+					
+					except Exception as e:
+						print(f"Failed to update client due to error: \n{e}")
 
-					# Navigate back to accounts
-					back = driver.find_element(By.XPATH, "//a[contains(@class, 'back-button-link')]")
-					click_js(driver, back)
+						# Populate CSV file
+						writer.writerow([
+							client_data["First Name"], 
+							client_data["Last Name"], 
+							client_data["Client ID"],
+							account_data["Account Name"], 
+							account_data["Account Type"], 
+							account_data["Account Category"], 
+							account_data["Account ID"], 
+							False
+						])
 
 
 			except Exception as e:
 				print(f"Failed to update account index {curr_idx} due to error:\n{e}")
+				# Populate CSV file
+				writer.writerow([
+					client_data["First Name"], 
+					client_data["Last Name"], 
+					client_data["Client ID"],
+					account_data["Account Name"], 
+					account_data["Account Type"], 
+					account_data["Account Category"], 
+					account_data["Account ID"], 
+					False
+				])
 
-		# After processing all accounts, prompt user to go to next page if end_idx == 1000
+		# Close secondary tab, focus on accounts list
+		driver.close()
+		driver.switch_to.window(source_window)
+
+		# If there are more than 1000 accounts to be processed
+		if (end_idx == 1000):
+			print("Click to the next page to display the next 1000 accounts and rerun if needed.")
