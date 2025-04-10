@@ -57,21 +57,21 @@ while True:
     if user_input == "exit":
         break
 
-    #after clicking on the client...
+# -----------------------Clicking the buttons to make the changes-------------------------------------
 
     #find the edit button
     edit_button = driver.find_element(By.ID, "editObject")
     click_js(driver, edit_button)
     time.sleep(2)
 
-    #ERROR HERE
     #locate where the toggle for the 'Validation' section
     validation_button = driver.find_element("xpath", "//tr[contains(@class, 'AccountValidation-wrapper')]//input[contains(@class, 'xpl-toggle')]")
     print("found it")
 
     #check to see if its been clicked or not -> its True if its been clicked and False if it hasn't been clicked yet
-    status_check = driver.find_element("xpath", "//div[contains(@class, 'Checkbox-wrapper AccountValidation-wrapper')]//i[contains(@class, 'field-web-control')]//i[contains(@class, 'pmFieldDependency')]")
+    status_check = driver.find_element("xpath", "//tr[contains(@class, 'AccountValidation-wrapper')]//input[@type='hidden']")
     status = status_check.get_attribute("value") 
+    print(f"Toggle status: {status}")
 
     #making an updated version of 'status' that's a boolean
     status_bool = status.lower() == "true"
@@ -80,17 +80,16 @@ while True:
     if status_bool == False:
 
         print("Clicking the toggle...")
-
         click_js(driver, validation_button)
 
         #find the date button
-        date_button = driver.find_element("xpath", "//div[contains(@class, 'Checkbox-wrapper AccountValidation-wrapper')]//i[contains(@class, 'Date-wrapper AccountResidencyValidatedOn-wrapper')]//i[contains(@class, 'pmdatepicker hasDatepicker k-valid')]")
-        date_button.clear()
+        date_button = driver.find_element("xpath", "//tr[contains(@class, 'Date-wrapper AccountResidencyValidatedOn-wrapper')]//input[contains(@class, 'pmdatepicker')]")
+        print("Found date box")
         date_button.send_keys(new_date)
         time.sleep(1)
 
         #find the save button
-        save = driver.find_element(By.XPATH, "//a[@title='Save' and contains(@class, 'pm-confirm-button xpl-button submitLinkVisible')]")
+        save = driver.find_element(By.ID, "submitButton")
         click_js(driver, save)
         time.sleep(4)
 
