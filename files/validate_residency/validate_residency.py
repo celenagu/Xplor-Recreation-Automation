@@ -158,18 +158,19 @@ while True:
                             print("Clicking the toggle...")
                             click_js(driver, validation_button)
 
-                            #find the date button
-                            date_button = driver.find_element("xpath", "//tr[contains(@class, 'Date-wrapper AccountResidencyValidatedOn-wrapper')]//input[contains(@class, 'pmdatepicker')]")
-                            print("Found date box")
-                            date_button.send_keys(new_date)
-                            time.sleep(1)
+                        #find the date button
+                        date_button = driver.find_element("xpath", "//tr[contains(@class, 'Date-wrapper AccountResidencyValidatedOn-wrapper')]//input[contains(@class, 'pmdatepicker')]")
+                        print("Found date box")
+                        date_button.clear()
+                        date_button.send_keys(new_date)
+                        time.sleep(1)
 
-                            #find the save button
-                            save = driver.find_element(By.ID, "submitButton")
-                            click_js(driver, save)
-                            time.sleep(4)
+                        #find the save button
+                        save = driver.find_element(By.ID, "submitButton")
+                        click_js(driver, save)
+                        time.sleep(4)
 
-                            print("Saved")
+                        print("Saved")
 
                         # ----------------------------------------------------------------------------------------
 
