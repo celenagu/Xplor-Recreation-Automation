@@ -57,14 +57,13 @@ while True:
     if user_input == "exit":
         break
 
-    #after clicking on the client...
+# -----------------------Clicking the buttons to make the changes-------------------------------------
 
     #find the edit button
     edit_button = driver.find_element(By.ID, "editObject")
     click_js(driver, edit_button)
     time.sleep(2)
 
-    #ERROR HERE
     #locate where the toggle for the 'Validation' section
     validation_button = driver.find_element("xpath", "//tr[contains(@class, 'AccountValidation-wrapper')]//input[contains(@class, 'xpl-toggle')]")
     print("found it")
@@ -81,7 +80,6 @@ while True:
     if status_bool == False:
 
         print("Clicking the toggle...")
-
         click_js(driver, validation_button)
 
         #find the date button
