@@ -16,7 +16,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 # Constants
 TEST_ENVIRONMENT = True
 FILE_NAME = "update_log.csv"
-new_date = "2060-01-1"
+new_date = "2060-01-01"
  
 # login based on the environment
 if not TEST_ENVIRONMENT:
@@ -82,10 +82,13 @@ while True:
         driver.execute_script("window.open('');")
         all_windows = driver.window_handles
         driver.switch_to.window(all_windows[-1])
+
+        prev_account = ""
         
+        # Iterate over all accounts
         for curr_idx, url in enumerate(account_urls[start_idx:end_idx+1], start = start_idx):
             print()
-            print(f"Processing current facility index: {curr_idx}")
+            print(f"============== Processing current facility index: {curr_idx} =================")
 
             account_data = {
                 "Account Name": "",         
@@ -116,10 +119,21 @@ while True:
                 client_data["Last Name"] = ""
                 client_data["Client ID"] = ""
 
+                # Keep track of the previous account processed, if duplicate, skip.
+                # (All accounts are sorted alphabetically so duplicate accounts will be consecutive)
+                # This may not be optimized (if multiple accounts have the same name) but will cut down on most of the redundancy 
+                if account_data["Account ID"] == prev_account:
+                    print("Duplicate of previously processed account, skip...")
+                    continue
+
+                prev_account = account_data["Account ID"]
+
                 # get clients associated with account
                 clients = driver.find_elements("xpath", "//li[contains(@class, 'family-member') and not (@id='family-member-template')]//h3[contains(@class, 'family-member-name')]")
 
+                print(account_data["Account Name"])
 
+                # iterate over all clients
                 for index in range(len(clients)):
                     try: 
                         clients = driver.find_elements("xpath", "//li[contains(@class, 'family-member') and not (@id='family-member-template')]//h3[contains(@class, 'family-member-name')]")
@@ -130,6 +144,9 @@ while True:
                         client_data["First Name"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'FirstName-wrapper')]//div[contains(@class, 'field-web-control')]").text
                         client_data["Last Name"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'LastName-wrapper')]//div[contains(@class, 'field-web-control')]").text
                         client_data["Client ID"] = driver.find_element(By.XPATH, "//tr[contains(@class, 'RecordName-wrapper')]//div[contains(@class, 'field-web-control')]").text
+
+                        print()
+                        print(f"Processing: {client_data['First Name']} {client_data["Last Name"]}")
 
                         # Handle updating residency
 
@@ -142,25 +159,21 @@ while True:
 
                         #locate where the toggle for the 'Validation' section
                         validation_button = driver.find_element("xpath", "//tr[contains(@class, 'AccountValidation-wrapper')]//input[contains(@class, 'xpl-toggle')]")
-                        print("found it")
 
                         #check to see if its been clicked or not -> its True if its been clicked and False if it hasn't been clicked yet
                         status_check = driver.find_element("xpath", "//tr[contains(@class, 'AccountValidation-wrapper')]//input[@type='hidden']")
                         status = status_check.get_attribute("value") 
-                        print(f"Toggle status: {status}")
+                        print(f"Current toggle status: {status}")
 
                         #making an updated version of 'status' that's a boolean
                         status_bool = status.lower() == "true"
 
                         #if the status is False, we need to click it...
                         if status_bool == False:
-
-                            print("Clicking the toggle...")
                             click_js(driver, validation_button)
 
                         #find the date button
                         date_button = driver.find_element("xpath", "//tr[contains(@class, 'Date-wrapper AccountResidencyValidatedOn-wrapper')]//input[contains(@class, 'pmdatepicker')]")
-                        print("Found date box")
                         date_button.clear()
                         date_button.send_keys(new_date)
                         time.sleep(1)
