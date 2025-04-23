@@ -1,6 +1,6 @@
 # Xplor-Recreation-Automation
 
-This repository contains several tools designed to streamline and automate repetitive tasks within the City of Brampton's Xplor Recreation Software. It logs all changes to a CSV file for easy tracking and reference. 
+This repository contains several tools designed to streamline and automate repetitive tasks within the City of Brampton's Xplor Recreation Software. All changes are logged to CSV files for easy tracking and reference. 
 
 Automations for adding and removing outdated fees were built upon an existing implementation ([link](https://github.com/Mintches/City-of-Brampton-Recreation)), which has been modified and optimized to improve functionality and meet new project requirements. Changes made to the original project are documented in `changelog.md`.
 
