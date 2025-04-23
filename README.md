@@ -5,12 +5,13 @@ This repository contains several tools designed to streamline and automate repet
 Automations for adding and removing outdated fees were built upon an existing implementation ([link](https://github.com/Mintches/City-of-Brampton-Recreation)), which has been modified and optimized to improve functionality and meet new project requirements. Changes made to the original project are documented in `changelog.md`.
 
 ## Setup
-1. Ensure that Python 3.8 or higher is installed. If not, download and install Python from the Python website.
-2. Install the required dependencies using pip:
+1. Ensure that Python 3.8 or higher is installed. If not, download and install Python from the ([Python website](https://www.python.org/downloads/)).
+2. Download the appropriate version of ([ChromeDriver](https://developer.chrome.com/docs/chromedriver/downloads)) that matches your Chrome version. Add ChromeDriver to system PATH. 
+3. Install the required dependencies using pip:
     ```bash
     pip install -r requirements.txt
 
-3. If in LIVE mode, set the `USERNAME` constant variable to a valid Brampton email.
+4. If in LIVE mode, set the `USERNAME` constant variable to a valid Brampton email.
 
 ## Automation Features 
 ### Adding and Deleting Fees
