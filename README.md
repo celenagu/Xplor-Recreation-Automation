@@ -10,7 +10,6 @@ Automations for adding and removing outdated fees were built upon an existing im
 3. Install the required dependencies using pip:
     ```bash
     pip install -r requirements.txt
-
 4. If in LIVE mode, set the `USERNAME` constant variable to a valid Brampton email.
 
 ## Automation Features 
